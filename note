@@ -1,6 +1,0 @@
-Register(POST) - auth/user/create/ params: {"email": "test@test.com", "name": "Test User", "password": "testtest"}        response:, {"token": "...", "email": "test...", "name": "Test.."}
-login(POST)- auth/user/login      params: {"email": "test@test.com","password": "testtest"}         response: {"token": "..."}
-refresh login(POST)- auth/user/refresh         params: {"token": "..."}          response: {"token": "..."}
-User details GET - auth/user/       headers:{"Authorization": "JWT ${token}"}      response: {"email": "test@...", "name": "Test...", "is_staff": ...,"is_authorized": ...}
-
-
