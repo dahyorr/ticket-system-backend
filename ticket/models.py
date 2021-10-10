@@ -9,7 +9,7 @@ date = datetime.date.today()
 
 
 class Queue(models.Model):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.title
@@ -30,11 +30,9 @@ class Ticket(models.Model):
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=3, blank=3,)
     status = models.BooleanField(default=True)  # Ticket status True means ticket is open
     created_date = models.DateTimeField(default=timezone.now)
-    modified_date = models.DateTimeField(default=timezone.now)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, blank=get_user_model(), null=True,
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
                               default=get_user_model(), related_name='owner')
-    assigned_users = models.ManyToManyField(User, related_name='assigned_users',
-                                            help_text='1 = Highest Priority, 5 = Low Priority',)
+    assigned_users = models.ManyToManyField(User, related_name='assigned_users',)
     ticket_date = models.IntegerField(default=int(f'{date.year}{date.month:02}{date.day:02}'))
 
     def __str__(self):
@@ -44,7 +42,7 @@ class Ticket(models.Model):
 class Reply(models.Model):
     message = models.TextField(blank=False, null=False)
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, null=False)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, default=get_user_model())
     date = models.DateTimeField(default=timezone.now)
 
     class Meta:
