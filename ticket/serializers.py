@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Queue, Ticket, Reply
+from userAuth.models import User
 
 
 class QueueSerializer(serializers.ModelSerializer):
@@ -22,6 +23,9 @@ class ReplySerializer(serializers.ModelSerializer):
 
 class TicketSerializer(serializers.ModelSerializer):
     """Serializer for Tickets"""
+    status = serializers.CharField(source='get_status_display')
+    # owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    owner = serializers.CharField()
 
     class Meta:
         model = Ticket

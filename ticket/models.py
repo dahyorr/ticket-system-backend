@@ -24,11 +24,16 @@ class Ticket(models.Model):
         (5, '5. Very Low'),
     )
 
+    STATUS_CHOICE = (
+        (1, 'Open'),
+        (2, 'Closed'),
+    )
+
     title = models.CharField(max_length=255)
     opening_text = models.TextField(blank=False, null=False)
     queue = models.ForeignKey(Queue, on_delete=models.SET_NULL, null=True)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=3, blank=3,)
-    status = models.BooleanField(default=True)  # Ticket status True means ticket is open
+    status = models.IntegerField(choices=STATUS_CHOICE, default=1)
     created_date = models.DateTimeField(default=timezone.now)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
                               default=get_user_model(), related_name='owner')
