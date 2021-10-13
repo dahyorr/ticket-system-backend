@@ -24,6 +24,7 @@ class ReplySerializer(serializers.ModelSerializer):
 class TicketSerializer(serializers.ModelSerializer):
     """Serializer for Tickets"""
     status = serializers.CharField(source='get_status_display')
+    priority = serializers.CharField(source='get_priority_display')
     # owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     owner = serializers.CharField()
 

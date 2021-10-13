@@ -17,11 +17,11 @@ class Queue(models.Model):
 
 class Ticket(models.Model):
     PRIORITY_CHOICES = (
-        (1, '1. Critical'),
-        (2, '2. High'),
-        (3, '3. Normal'),
-        (4, '4. Low'),
-        (5, '5. Very Low'),
+        (1, 'Critical'),
+        (2, 'High'),
+        (3, 'Normal'),
+        (4, 'Low'),
+        (5, 'Very Low'),
     )
 
     STATUS_CHOICE = (

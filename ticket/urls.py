@@ -9,5 +9,6 @@ router.register('tickets', views.TicketViewSet)
 app_name = 'ticket'
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('user/tickets/', views.UserTickets.as_view(), name="User Tickets")
 ]

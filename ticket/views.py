@@ -1,4 +1,4 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, generics
 # from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 # from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import BasePermission, SAFE_METHODS
@@ -68,7 +68,7 @@ class TicketViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
         serializer.save(owner=self.request.user)
 
     def perform_update(self, serializer):
-        print((self.request.GET))
+        print(self.request.GET)
 
 
 class ReplyViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
@@ -79,3 +79,14 @@ class ReplyViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Create
     permission_classes = (IsAuthorizedOrUserReadOnly,)
     queryset = Reply.objects.all()
     serializer_class = serializers.ReplySerializer
+
+
+class UserTickets(generics.ListAPIView):
+    serializer_class = serializers.TicketSerializer
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the tickets for
+        the user.
+        """
+        return Ticket.objects.filter(owner=self.request.user)
