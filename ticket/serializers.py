@@ -27,6 +27,7 @@ class TicketSerializer(serializers.ModelSerializer):
     priority = serializers.CharField(source='get_priority_display')
     # owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     owner = serializers.CharField()
+    assigned_users = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Ticket
