@@ -6,9 +6,9 @@ from ticket import views
 router = DefaultRouter()
 router.register('queues', views.QueueViewSet)
 router.register('tickets', views.TicketViewSet)
+router.register('replies', views.ReplyViewSet)
 app_name = 'ticket'
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('user/tickets/', views.UserTickets.as_view(), name="User Tickets")
 ]

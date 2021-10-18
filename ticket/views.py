@@ -1,6 +1,5 @@
-from rest_framework import viewsets, mixins, generics
-# from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-# from rest_framework.authentication import TokenAuthentication
+from django.utils import  timezone
+from rest_framework import viewsets, mixins
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from .models import Queue, Ticket, Reply
 from ticket import serializers
@@ -8,7 +7,6 @@ from ticket import serializers
 
 class IsAdminOrUserReadOnly(BasePermission):
     def has_permission(self, request, view):
-        print('rrr')
         if request.method in SAFE_METHODS and request.user.is_active:
             return True
         else:
@@ -29,10 +27,7 @@ class IsAuthorizedOrUserReadOnly(BasePermission):
                 return False
 
 
-class QueueViewSet(viewsets.GenericViewSet,
-                   mixins.ListModelMixin, mixins.CreateModelMixin,
-                   mixins.UpdateModelMixin, mixins.RetrieveModelMixin,
-                   mixins.DestroyModelMixin):
+class QueueViewSet(viewsets.ModelViewSet):
     """Manage queues in the database"""
     # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication)
     permission_classes = (IsAdminOrUserReadOnly,)
@@ -43,50 +38,44 @@ class QueueViewSet(viewsets.GenericViewSet,
         """return objects by id"""
         return self.queryset.filter().order_by('title')
 
-    def perform_create(self, serializer):
-        """create a new Queue"""
-        serializer.save()
 
-
-class TicketViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
-                    mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
+class TicketViewSet(viewsets.ModelViewSet):
     """Manage queues in the database"""
-
     # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication)
     permission_classes = (IsAuthorizedOrUserReadOnly,)
     queryset = Ticket.objects.all()
     serializer_class = serializers.TicketSerializer
+    http_method_names = ['get', 'post', 'head', 'put']
 
-    def get_queryset(self,):
-        """return objects by id"""
-        # if self.request.user.id == self.queryset.get(pk=1):
-        # print(self.request.GET.keys())
-        return self.queryset.filter().order_by('-created_date')
+    def get_queryset(self):
+        queryset = self.queryset
+        status = self.request.query_params.get('status')
+        user = self.request.query_params.get('user')
+        if status:
+            queryset = queryset.filter(status=status)
+        if user and bool(int(user)):
+            queryset = queryset.filter(owner=self.request.user.id)
+        return queryset.order_by('-created_date')
 
     def perform_create(self, serializer):
-        """create a new Queue"""
+        """create a new Ticket"""
         serializer.save(owner=self.request.user)
 
     def perform_update(self, serializer):
-        print(self.request.GET)
+        serializer.save(last_updated=timezone.now())
 
 
-class ReplyViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
-                   mixins.DestroyModelMixin):
+class ReplyViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,):
     """Manage queues in the database"""
-
     # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication)
     permission_classes = (IsAuthorizedOrUserReadOnly,)
     queryset = Reply.objects.all()
     serializer_class = serializers.ReplySerializer
 
-
-class UserTickets(generics.ListAPIView):
-    serializer_class = serializers.TicketSerializer
-
     def get_queryset(self):
-        """
-        This view should return a list of all the tickets for
-        the user.
-        """
-        return Ticket.objects.filter(owner=self.request.user)
+        """return objects by id"""
+        return self.queryset.order_by('date')
+
+    def perform_create(self, serializer):
+        """create a new Reply"""
+        serializer.save(author=self.request.user)

@@ -14,23 +14,32 @@ class QueueSerializer(serializers.ModelSerializer):
 
 class ReplySerializer(serializers.ModelSerializer):
     """Serializer for Replies"""
+    author = serializers.StringRelatedField()
 
     class Meta:
         model = Reply
-        fields = ('id', 'message', 'ticket', 'date')
-        read_only_fields = ('id', 'date')
+        fields = ('message', 'ticket', 'date', 'author')
+        read_only_fields = ('id', 'date', 'author')
 
 
 class TicketSerializer(serializers.ModelSerializer):
     """Serializer for Tickets"""
-    status = serializers.CharField(source='get_status_display')
-    priority = serializers.CharField(source='get_priority_display')
-    # owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    owner = serializers.CharField()
-    assigned_users = serializers.StringRelatedField(many=True)
+    status = serializers.ChoiceField(choices=Ticket.STATUS_CHOICE)
+    priority = serializers.ChoiceField(choices=Ticket.PRIORITY_CHOICES)
+    owner = serializers.StringRelatedField()
+    queue = serializers.PrimaryKeyRelatedField(queryset=Queue.objects.all(), allow_null=True)
+    assigned_users = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
+    replies = ReplySerializer(many=True, read_only=True)
+
+    def to_representation(self, instance):
+        """to_representation Return of custom serialized data"""
+        data = super().to_representation(instance)
+        data.update(status=instance.get_status_display())
+        data.update(priority=instance.get_priority_display())
+        return data
 
     class Meta:
         model = Ticket
         fields = ('id', 'title', 'opening_text', 'queue', 'priority', 'status', 'owner',
-                  'assigned_users', 'created_date')
-        read_only_fields = ('id', 'created_date')
+                  'assigned_users', 'created_date', 'last_updated', 'replies')
+        read_only_fields = ('id', 'created_date', 'last_updated', 'owner', 'replies')
