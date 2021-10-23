@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegisterSerializer, UserSerializer, UserListSerializer
 from rest_framework.decorators import api_view
 from .models import User
 
@@ -36,7 +36,7 @@ class UserList(generics.ListAPIView):
     Create a new user. It's called 'UserList' because normally we'd have a get
     method here too, for retrieving a list of all User objects.
     """
-    serializer_class = UserSerializer
+    serializer_class = UserListSerializer
 
     def get_queryset(self):
-        return User.objects.filter(is_authorized=True)
+        return User.objects.all()

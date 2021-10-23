@@ -10,6 +10,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('email', 'name', 'is_staff', 'is_authorized')
 
 
+class UserListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'name', 'is_staff', 'is_authorized')
+        read_only_fields = ('id',)
+
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
