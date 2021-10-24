@@ -37,6 +37,11 @@ class UserList(generics.ListAPIView):
     method here too, for retrieving a list of all User objects.
     """
     serializer_class = UserListSerializer
+    queryset = User.objects.all()
 
     def get_queryset(self):
-        return User.objects.all()
+        queryset = self.queryset
+        authorized = self.request.query_params.get('authorized')
+        if authorized and bool(int(authorized)):
+            queryset = queryset.filter(is_authorized=True)
+        return queryset
