@@ -45,7 +45,7 @@ class TicketViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorizedOrUserReadOnly,)
     queryset = Ticket.objects.all()
     serializer_class = serializers.TicketSerializer
-    http_method_names = ['get', 'post', 'head', 'put']
+    http_method_names = ['get', 'post', 'head', 'put', 'patch']
 
     def get_queryset(self):
         queryset = self.queryset
@@ -55,6 +55,7 @@ class TicketViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(status=status)
         if user and bool(int(user)):
             queryset = queryset.filter(owner=self.request.user.id)
+
         return queryset.order_by('-created_date')
 
     def perform_create(self, serializer):

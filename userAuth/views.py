@@ -44,4 +44,5 @@ class UserList(generics.ListAPIView):
         authorized = self.request.query_params.get('authorized')
         if authorized and bool(int(authorized)):
             queryset = queryset.filter(is_authorized=True)
-        return queryset
+
+        return queryset.all()

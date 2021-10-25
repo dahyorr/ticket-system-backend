@@ -27,7 +27,7 @@ class TicketSerializer(serializers.ModelSerializer):
     status = serializers.ChoiceField(choices=Ticket.STATUS_CHOICE, required=False)
     priority = serializers.ChoiceField(choices=Ticket.PRIORITY_CHOICES)
     owner = serializers.StringRelatedField()
-    queue = serializers.PrimaryKeyRelatedField(queryset=Queue.objects.all(), allow_null=True)
+    queue = serializers.PrimaryKeyRelatedField(queryset=Queue.objects.all())
     assigned_users = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all())
     replies = ReplySerializer(many=True, read_only=True)
 
