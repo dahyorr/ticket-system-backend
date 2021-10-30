@@ -3,6 +3,8 @@ from rest_framework import viewsets, mixins
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from .models import Queue, Ticket, Reply
 from ticket import serializers
+from .notify import send_ticket_reply_notification, send_ticket_created_notification, \
+    send_ticket_updated_notification
 
 
 class IsAdminOrUserReadOnly(BasePermission):
@@ -29,7 +31,6 @@ class IsAuthorizedOrUserReadOnly(BasePermission):
 
 class QueueViewSet(viewsets.ModelViewSet):
     """Manage queues in the database"""
-    # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication)
     permission_classes = (IsAdminOrUserReadOnly,)
     queryset = Queue.objects.all()
     serializer_class = serializers.QueueSerializer
@@ -41,7 +42,6 @@ class QueueViewSet(viewsets.ModelViewSet):
 
 class TicketViewSet(viewsets.ModelViewSet):
     """Manage queues in the database"""
-    # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication)
     permission_classes = (IsAuthorizedOrUserReadOnly,)
     queryset = Ticket.objects.all()
     serializer_class = serializers.TicketSerializer
@@ -60,15 +60,24 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """create a new Ticket"""
-        serializer.save(owner=self.request.user)
+        user = self.request.user
+        ticket = serializer.save(owner=user)
+        users = ticket.assigned_users.all().exclude(id=user.id)
+        for user in users:
+            send_ticket_created_notification(user.id, user, ticket.id)
 
     def perform_update(self, serializer):
-        serializer.save(last_updated=timezone.now())
+        user = self.request.user
+        ticket = serializer.save(last_updated=timezone.now())
+        users = ticket.assigned_users.all().exclude(id=user.id)
+        for user in users:
+            send_ticket_updated_notification(user.id, user, ticket.id)
+
+
 
 
 class ReplyViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,):
     """Manage queues in the database"""
-    # authentication_classes = (JSONWebTokenAuthentication, TokenAuthentication)
     permission_classes = (IsAuthorizedOrUserReadOnly,)
     queryset = Reply.objects.all()
     serializer_class = serializers.ReplySerializer
@@ -79,4 +88,9 @@ class ReplyViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Create
 
     def perform_create(self, serializer):
         """create a new Reply"""
-        serializer.save(author=self.request.user)
+        user = self.request.user
+        reply = serializer.save(author=user)
+        ticket_id = reply.ticket.id
+        users = Ticket.objects.get(id=ticket_id).assigned_users.all().exclude(id=user.id)
+        for user in users:
+            send_ticket_reply_notification(user.id, user, ticket_id)
