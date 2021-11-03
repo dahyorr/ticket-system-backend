@@ -47,6 +47,12 @@ class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.TicketSerializer
     http_method_names = ['get', 'post', 'head', 'put', 'patch']
 
+    def get_serializer_class(self):
+        if self.request.method == 'PATCH' or self.request.method == 'PUT':
+            return serializers.TicketUpdateSerializer
+        else:
+            return self.serializer_class
+
     def get_queryset(self):
         queryset = self.queryset
         status = self.request.query_params.get('status')
@@ -72,8 +78,6 @@ class TicketViewSet(viewsets.ModelViewSet):
         users = ticket.assigned_users.all().exclude(id=user.id)
         for user in users:
             send_ticket_updated_notification(user.id, user, ticket.id)
-
-
 
 
 class ReplyViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,):

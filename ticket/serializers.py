@@ -43,3 +43,12 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'opening_text', 'queue', 'priority', 'status', 'owner',
                   'assigned_users', 'created_date', 'last_updated', 'replies')
         read_only_fields = ('id', 'created_date', 'last_updated', 'owner', 'replies')
+
+
+class TicketUpdateSerializer(TicketSerializer):
+    """Serializer for Tickets Updates"""
+    class Meta:
+        model = Ticket
+        fields = ('id', 'title', 'opening_text', 'queue', 'priority', 'status', 'owner',
+                  'assigned_users', 'created_date', 'last_updated', 'replies')
+        read_only_fields = ('id', 'opening_text', 'created_date', 'last_updated', 'owner', 'replies')
