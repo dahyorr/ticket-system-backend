@@ -7,6 +7,7 @@ router = DefaultRouter()
 router.register('tickets', views.TicketViewSet)
 router.register('queues', views.QueueViewSet)
 router.register('replies', views.ReplyViewSet)
+router.register('notifications', views.NotificationViewSet)
 app_name = 'ticket'
 
 urlpatterns = [

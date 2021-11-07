@@ -34,7 +34,7 @@ class Ticket(models.Model):
     last_updated = models.DateTimeField(default=timezone.now)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
                               default=get_user_model(), related_name='owner')
-    assigned_users = models.ManyToManyField(User, related_name='assigned_users',)
+    assigned_users = models.ManyToManyField(User, related_name='assigned_tickets',)
 
     def __str__(self):
         return self.title
@@ -53,3 +53,13 @@ class Reply(models.Model):
 
     def __str__(self):
         return self.message
+
+
+class Notification(models.Model):
+    content = models.CharField(max_length=255)
+    type = models.CharField(max_length=20)
+    date = models.DateTimeField(default=timezone.now)
+    users = models.ManyToManyField(User, related_name='notifications')
+
+    def __str__(self):
+        return f'{self.type} | {self.content}'

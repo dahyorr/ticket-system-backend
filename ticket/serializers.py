@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Queue, Ticket, Reply
+from .models import Queue, Ticket, Reply, Notification
 from userAuth.models import User
 
 
@@ -52,3 +52,11 @@ class TicketUpdateSerializer(TicketSerializer):
         fields = ('id', 'title', 'opening_text', 'queue', 'priority', 'status', 'owner',
                   'assigned_users', 'created_date', 'last_updated', 'replies')
         read_only_fields = ('id', 'opening_text', 'created_date', 'last_updated', 'owner', 'replies')
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    """Serializer for Replies"""
+    class Meta:
+        model = Notification
+        fields = ('content', 'type', 'date')
+        read_only_fields = ('content', 'type', 'date')
