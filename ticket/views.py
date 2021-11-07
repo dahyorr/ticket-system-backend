@@ -3,8 +3,6 @@ from rest_framework import viewsets, mixins
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from .models import Queue, Ticket, Reply
 from ticket import serializers
-from .notify import send_ticket_reply_notification, send_ticket_created_notification, \
-    send_ticket_updated_notification
 
 
 class IsAdminOrUserReadOnly(BasePermission):
@@ -68,16 +66,16 @@ class TicketViewSet(viewsets.ModelViewSet):
         """create a new Ticket"""
         user = self.request.user
         ticket = serializer.save(owner=user)
-        users = ticket.assigned_users.all().exclude(id=user.id)
-        for user in users:
-            send_ticket_created_notification(user.id, user, ticket.id)
+        # users = ticket.assigned_users.all().exclude(id=user.id)
+        # for user in users:
+            # send_ticket_created_notification(user.id, user, ticket.id)
 
     def perform_update(self, serializer):
         user = self.request.user
         ticket = serializer.save(last_updated=timezone.now())
-        users = ticket.assigned_users.all().exclude(id=user.id)
-        for user in users:
-            send_ticket_updated_notification(user.id, user, ticket.id)
+        # users = ticket.assigned_users.all().exclude(id=user.id)
+        # for user in users:
+            # send_ticket_updated_notification(user.id, user, ticket.id)
 
 
 class ReplyViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,):
@@ -95,6 +93,6 @@ class ReplyViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Create
         user = self.request.user
         reply = serializer.save(author=user)
         ticket_id = reply.ticket.id
-        users = Ticket.objects.get(id=ticket_id).assigned_users.all().exclude(id=user.id)
-        for user in users:
-            send_ticket_reply_notification(user.id, user, ticket_id)
+        # users = Ticket.objects.get(id=ticket_id).assigned_users.all().exclude(id=user.id)
+        # for user in users:
+            # send_ticket_reply_notification(user.id, user, ticket_id)
