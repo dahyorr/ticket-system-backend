@@ -108,7 +108,6 @@ celerybeat.pid
 env/
 venv/
 ENV/
-*/migrations
 env.bak/
 venv.bak/
 
@@ -131,6 +130,5 @@ dmypy.json
 .pyre/
 
 .idea
-/migrations
 
 config

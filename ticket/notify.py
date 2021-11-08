@@ -1,8 +1,6 @@
 from .models import Notification
 from django.contrib.auth import get_user_model
 
-user = get_user_model().objects.get(email='dahyor@outlook.com')
-
 def send_ticket_created_notification( owner, ticket_id, users):
     content = f'{owner} created a new ticket #{ticket_id} and assigned it to you'
     notification = Notification(content=content, type='Create Ticket')
