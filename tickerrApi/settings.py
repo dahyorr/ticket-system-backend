@@ -74,6 +74,8 @@ REST_FRAMEWORK = {
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
     'http://localhost:3001',
+    'https://ticket-system-frontend-three.vercel.app/',
+    'https://ticketrr.dayo.dev'
 )
 
 ROOT_URLCONF = 'tickerrApi.urls'
