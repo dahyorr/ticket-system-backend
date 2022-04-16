@@ -1,0 +1,1 @@
+web: gunicorn tickerrApi.wsgi --log-file -

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 import datetime
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -97,6 +99,7 @@ WSGI_APPLICATION = 'tickerrApi.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+PROD_DB = dj_database_url.config(conn_max_age=500)
 DATABASES = {
     "default": {
     "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.sqlite3"),
@@ -107,6 +110,8 @@ DATABASES = {
     "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
+if not(DEBUG):
+    DATABASES['default'].update(PROD_DB)
 
 
 # Password validation
@@ -145,6 +150,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
 STATIC_URL = '/staticfiles/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
 
