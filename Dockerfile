@@ -20,4 +20,6 @@ COPY . .
 RUN adduser -D user
 RUN chown -R user:user /code/
 RUN chmod -R 755 /code/staticfiles
+RUN chmod +x entrypoint.sh
 USER user
+CMD ["./entrypoint.sh"]
