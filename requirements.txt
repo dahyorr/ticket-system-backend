@@ -3,6 +3,7 @@ django-cors-headers==3.7.0
 djangorestframework==3.12.2
 djangorestframework-simplejwt==4.8.0
 gunicorn
-psycopg2
+psycopg2-binary
 dj_database_url
 whitenoise
+python-dotenv==0.20.0
